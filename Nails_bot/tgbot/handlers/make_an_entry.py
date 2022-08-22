@@ -34,24 +34,35 @@ def register_make_an_entry_bot(dp: Dispatcher):
                                                               f'Рейтинг: 5 из 5\n'
                                                               f'Призвание: {master.disc_master}')
 
-    @dp.callback_query_handler(touch_button.filter(aboute='False'))
-    async def touch_inline_button(call: CallbackQuery, callback_data):
 
-        # await call.message.answer("Вы выбрали мастера: Елена\n"
-        #                           "Выберите дату посещения:", reply_markup=await SimpleCalendar().start_calendar())
-        DialogCalendar.months = ["Янв", "Фев", "Март", "Апр", "Май", "Июнь", "Июль", "Авг", "Sep", "Oct", "Nov", "Dec"]
-        await call.message.answer("Вы выбрали мастера: Елена\n"
-                                  "Выберите дату посещения:", reply_markup=await DialogCalendar().start_calendar())
-        # await call.bot.answer_callback_query(call.id)
-        # await call.message.answer('This is right')
-        # print(callback_data)
-        # print(call)
-        # print('eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee')
 
-    @dp.callback_query_handler(dialog_cal_callback.filter())
-    async def process_dialog_calendar(callback_query: CallbackQuery, callback_data):
-        selected, date = await DialogCalendar().process_selection(callback_query, callback_data)
-        if selected:
-            await callback_query.message.answer(
-                f'You selected {date.strftime("%d/%m/%Y")}'
-            )
+
+
+
+
+
+
+
+    # Календарь из сторонней библиоткеи
+    # @dp.callback_query_handler(touch_button.filter(aboute='False'))
+    # async def touch_inline_button(call: CallbackQuery, callback_data):
+    #     '''Календарь из Inline кнопок'''
+    #
+    #     # await call.message.answer("Вы выбрали мастера: Елена\n"
+    #     #                           "Выберите дату посещения:", reply_markup=await SimpleCalendar().start_calendar())
+    #     DialogCalendar.months = ["Янв", "Фев", "Март", "Апр", "Май", "Июнь", "Июль", "Авг", "Сент", "Окт", "Нояб", "Дек"]
+    #     await call.message.answer("Вы выбрали мастера: Елена\n"
+    #                               "Выберите дату посещения:", reply_markup=await DialogCalendar().start_calendar())
+    #     # await call.bot.answer_callback_query(call.id)
+    #     # await call.message.answer('This is right')
+    #     # print(callback_data)
+    #     # print(call)
+    #     # print('eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee')
+    #
+    # @dp.callback_query_handler(dialog_cal_callback.filter())
+    # async def process_dialog_calendar(callback_query: CallbackQuery, callback_data):
+    #     selected, date = await DialogCalendar().process_selection(callback_query, callback_data)
+    #     if selected:
+    #         await callback_query.message.answer(
+    #             f'You selected {date.strftime("%d/%m/%Y")}'
+    #         )
