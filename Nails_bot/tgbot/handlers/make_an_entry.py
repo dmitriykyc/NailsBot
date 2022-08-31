@@ -1,6 +1,8 @@
 from aiogram import Dispatcher, types
 from aiogram.types import CallbackQuery
 
+from Nails_bot.tgbot.keyboards.inline_choice_services import get_menu_choice_services, get_menu_choice_services_all
+from Nails_bot.tgbot.keyboards.inline_choice_services_data import choice_services_touch_button, pagination
 from Nails_bot.tgbot.keyboards.inline_choice_master import get_menu
 from Nails_bot.tgbot.keyboards.inline_choice_master_data import touch_button
 from Nails_bot.tgbot.keyboards.inline_datatime import get_menu_years, get_menu_month, get_menu_day, get_menu_time
@@ -73,6 +75,27 @@ def register_make_an_entry_bot(dp: Dispatcher):
 
     @dp.message_handler(text='Выбрать услугу')
     async def cange_service(message: types.Message):
-        await message.answer('Ok, you need to chnge services')
+        print(get_menu_choice_services_all(0))
+        await message.answer('Ok, you need to chnge services', reply_markup=get_menu_choice_services_all(0))
+
+    @dp.callback_query_handler(pagination.filter(name='next_page') | pagination.filter(name='back_page'))
+    async def answer_callback(call: CallbackQuery, callback_data):
+        # await call.answer(cache_time=60)
+        page = int(callback_data['page'])
+        back_or_next = callback_data['name']
+        if back_or_next == 'next_page':
+            page += 1
+        else:
+            page -= 1
+        print(page)
+        await call.message.edit_reply_markup(get_menu_choice_services_all(page))
+
+    @dp.callback_query_handler(choice_services_touch_button.filter())
+    async def services_edit_message(call: CallbackQuery, callback_data):
+        print(call)
+        print(callback_data)
+        sum_price = int(callback_data["sum_price"])+int(callback_data["price"])
+        await call.message.edit_text(f'Вы выбрали маник\nСтоимость: <b>{sum_price}</b>\nДобавить что нибудь?',
+                                     reply_markup=get_menu_choice_services(sum_price=sum_price))
 
 
