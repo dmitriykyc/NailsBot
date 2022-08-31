@@ -8,7 +8,7 @@ from Nails_bot.tgbot.keyboards.inline_datetime_data import create_datetime
 from Nails_bot.tgbot.keyboards.reply_choice_type import menu_choice_type
 from Nails_bot.tgbot.services.db_api.db_commands import get_all_masters, select_master
 from Nails_bot.tgbot.services.db_api.db_gino import on_startup
-from aiogram_calendar import SimpleCalendar, DialogCalendar, dialog_cal_callback
+
 
 
 def register_make_an_entry_bot(dp: Dispatcher):
@@ -74,3 +74,5 @@ def register_make_an_entry_bot(dp: Dispatcher):
     @dp.message_handler(text='Выбрать услугу')
     async def cange_service(message: types.Message):
         await message.answer('Ok, you need to chnge services')
+
+
