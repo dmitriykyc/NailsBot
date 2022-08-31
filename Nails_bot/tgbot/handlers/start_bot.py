@@ -10,8 +10,11 @@ from Nails_bot.tgbot.services.db_api import db_gino, db_commands
 
 
 def register_start_bot(dp: Dispatcher):
+
+    # Обрабатываем команду старт
     @dp.message_handler(commands='start')
     async def start_command(message: types.Message):
+
         await message.answer('<b>Hello!</b>\n'
                              'Давай знакомиться! Мы делаем ногти\n'
                              'Наш адрес: 3й лихачёвский\n'
@@ -24,11 +27,12 @@ def register_start_bot(dp: Dispatcher):
             await message.answer('Подскажите, как Вас зовут?')
             await CheckName.Q2.set()
 
+
+    # Проверка имени пользователя из профиля в телеграм
     @dp.callback_query_handler(
         touch_data_start_name.filter(choice_button='True') | touch_data_start_name.filter(choice_button='False'))
     async def answer_start_name(call: CallbackQuery, callback_data):
         if callback_data['choice_button'] == 'True':
-            # print(callback_data)
             await call.bot.answer_callback_query(call.id)
             await call.message.answer(
                 f'Рады что Вы {call.from_user["first_name"]}, можете воспользоваться нашим меню ниже.',
@@ -45,6 +49,7 @@ def register_start_bot(dp: Dispatcher):
             await call.message.answer(f'Напишите нам Ваше имя:')
             await CheckName.Q2.set()
 
+    # Изменение имени, проверить состояния, нужно ли их вообще использовать
     @dp.message_handler(state=CheckName.Q2)
     async def rename_user(message: types.Message, state: FSMContext):
 
