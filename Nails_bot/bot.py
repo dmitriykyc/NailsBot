@@ -5,6 +5,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.fsm_storage.redis import RedisStorage2
 
+from Nails_bot.tgbot.handlers.feedback import register_feedback_handler
 from Nails_bot.tgbot.handlers.get_photo import register_get_photo
 from Nails_bot.tgbot.handlers.make_an_entry import register_make_an_entry_bot
 from Nails_bot.tgbot.handlers.start_bot import register_start_bot
@@ -26,6 +27,7 @@ def register_all_filters(dp):
 
 
 def register_all_handlers(dp):
+    register_feedback_handler(dp)
     register_get_photo(dp)
     # register_hand_about_master(dp)
     register_tests_hendlers(dp)
