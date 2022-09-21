@@ -2,9 +2,11 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from Nails_bot.tgbot.keyboards.inline_choice_services_data import choice_services_touch_button
 
-def get_menu_choice_services_all(page):
 
-    #Функция разбивает на пагинацию список
+def get_menu_choice_services_all(page):
+    '''Группы усоуг'''
+
+    # Функция разбивает на пагинацию список
     def func_chunks_generators(lst, n):
         for i in range(0, len(lst), n):
             yield lst[i: i + n]
@@ -16,7 +18,7 @@ def get_menu_choice_services_all(page):
     inline_kb_full = InlineKeyboardMarkup(row_width=2)
 
     for ell in new_position[page]:
-        inline_kb_full.add(InlineKeyboardButton(text=ell, callback_data=f'touch_this:{ell}:{page}'))
+        inline_kb_full.add(InlineKeyboardButton(text=ell, callback_data=f'touch_choice_services:{ell}:{page}:0'))
     btn_next = InlineKeyboardButton(text='Далее >>>', callback_data=f'touch_this:next_page:{page}')
     btn_back = InlineKeyboardButton(text='<<< Назад', callback_data=f'touch_this:back_page:{page}')
     if page != len(new_position) - 1:
@@ -26,7 +28,34 @@ def get_menu_choice_services_all(page):
             inline_kb_full.add(btn_next)
     else:
         inline_kb_full.add(btn_back)
+    print(f'inline_kb_full = = = {inline_kb_full}')
     return inline_kb_full
+
+
+def get_menu_service():
+    '''Определенные услуги
+    !!!!! Нельзя много данных использовать в callback_data, тянуть данные по id'''
+
+    brow = {
+        'Окрашивание бровей': 350,
+        'Оформление бровей': 350,
+        'Биотатуаж (окрашивание Хной)': 500,
+        'Окрашивание ресниц': 300
+    }
+    men_room = {
+        'Модельная Стрижка': 500,
+        'креативная': 500,
+        'стрижка': 350,
+        'стрижка2': 200}
+
+    inline_kb_services = InlineKeyboardMarkup(row_width=1)
+
+    for ell in men_room:
+        inline_kb_services.add(InlineKeyboardButton(text=ell,
+                                                    callback_data=f'touch_choice_services:main:100:0'))
+
+    print(inline_kb_services)
+    return inline_kb_services
 
 
 def get_menu_choice_services(sum_price):

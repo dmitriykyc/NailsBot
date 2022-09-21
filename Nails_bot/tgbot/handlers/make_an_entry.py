@@ -1,7 +1,8 @@
 from aiogram import Dispatcher, types
 from aiogram.types import CallbackQuery
 
-from Nails_bot.tgbot.keyboards.inline_choice_services import get_menu_choice_services, get_menu_choice_services_all
+from Nails_bot.tgbot.keyboards.inline_choice_services import get_menu_choice_services, get_menu_choice_services_all, \
+    get_menu_service
 from Nails_bot.tgbot.keyboards.inline_choice_services_data import choice_services_touch_button, pagination
 from Nails_bot.tgbot.keyboards.inline_choice_master import get_menu
 from Nails_bot.tgbot.keyboards.inline_choice_master_data import touch_button
@@ -87,15 +88,21 @@ def register_make_an_entry_bot(dp: Dispatcher):
             page += 1
         else:
             page -= 1
-        print(page)
+        # print(page)
         await call.message.edit_reply_markup(get_menu_choice_services_all(page))
 
     @dp.callback_query_handler(choice_services_touch_button.filter())
     async def services_edit_message(call: CallbackQuery, callback_data):
-        print(call)
-        print(callback_data)
-        sum_price = int(callback_data["sum_price"])+int(callback_data["price"])
-        await call.message.edit_text(f'Вы выбрали маник\nСтоимость: <b>{sum_price}</b>\nДобавить что нибудь?',
-                                     reply_markup=get_menu_choice_services(sum_price=sum_price))
+        # print(call)
+        # print(callback_data)
+        # sum_price = int(callback_data["sum_price"])+int(callback_data["price"])
+        await call.message.edit_text(f'Вы выбрали: {callback_data["name"]}\n'
+                                     f'Стоимость: <b>1</b>\n'
+                                     f'Добавить что нибудь?',
+                                     reply_markup=get_menu_service())
 
+    # @dp.callback_query_handler(choice_services_touch_button.filter())
+    # async def choice_services(call: CallbackQuery, callback_data):
+    #     print(call)
+    #     print(callback_data)
 
