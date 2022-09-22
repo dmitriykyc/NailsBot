@@ -3,13 +3,15 @@ from aiogram.types import CallbackQuery
 
 from Nails_bot.tgbot.keyboards.inline_choice_services import get_menu_choice_services, get_menu_choice_services_all, \
     get_menu_service
-from Nails_bot.tgbot.keyboards.inline_choice_services_data import choice_services_touch_button, pagination
+from Nails_bot.tgbot.keyboards.inline_choice_services_data import choice_services_touch_button, pagination, \
+    category_services_touch_button
 from Nails_bot.tgbot.keyboards.inline_choice_master import get_menu
 from Nails_bot.tgbot.keyboards.inline_choice_master_data import touch_button
 from Nails_bot.tgbot.keyboards.inline_datatime import get_menu_years, get_menu_month, get_menu_day, get_menu_time
 from Nails_bot.tgbot.keyboards.inline_datetime_data import create_datetime
 from Nails_bot.tgbot.keyboards.reply_choice_type import menu_choice_type
-from Nails_bot.tgbot.services.db_api.db_commands import get_all_masters, select_master
+from Nails_bot.tgbot.services.db_api import db_commands
+from Nails_bot.tgbot.services.db_api.db_commands import get_all_masters, select_master, select_services_from_category
 from Nails_bot.tgbot.services.db_api.db_gino import on_startup
 
 
@@ -76,8 +78,9 @@ def register_make_an_entry_bot(dp: Dispatcher):
 
     @dp.message_handler(text='Выбрать услугу')
     async def cange_service(message: types.Message):
-        print(get_menu_choice_services_all(0))
-        await message.answer('Ok, you need to chnge services', reply_markup=get_menu_choice_services_all(0))
+        await on_startup(dp)
+        category_all = await db_commands.get_all_services_category()
+        await message.answer('Выберите нужный раздел: }', reply_markup=get_menu_choice_services_all(0, category_all))
 
     @dp.callback_query_handler(pagination.filter(name='next_page') | pagination.filter(name='back_page'))
     async def answer_callback(call: CallbackQuery, callback_data):
@@ -88,18 +91,20 @@ def register_make_an_entry_bot(dp: Dispatcher):
             page += 1
         else:
             page -= 1
-        # print(page)
-        await call.message.edit_reply_markup(get_menu_choice_services_all(page))
+        await on_startup(dp)
+        category_all = await db_commands.get_all_services_category()
+        await call.message.edit_reply_markup(get_menu_choice_services_all(page, category_all))
 
-    @dp.callback_query_handler(choice_services_touch_button.filter())
+    @dp.callback_query_handler(category_services_touch_button.filter())
     async def services_edit_message(call: CallbackQuery, callback_data):
         # print(call)
         # print(callback_data)
-        # sum_price = int(callback_data["sum_price"])+int(callback_data["price"])
-        await call.message.edit_text(f'Вы выбрали: {callback_data["name"]}\n'
-                                     f'Стоимость: <b>1</b>\n'
-                                     f'Добавить что нибудь?',
-                                     reply_markup=get_menu_service())
+        id_category = int(callback_data['id_category'])
+        await on_startup(dp)
+        services = await select_services_from_category(id_category)
+
+        await call.message.edit_text(f'Выберите услугу:',
+                                     reply_markup=get_menu_service(services))
 
     # @dp.callback_query_handler(choice_services_touch_button.filter())
     # async def choice_services(call: CallbackQuery, callback_data):

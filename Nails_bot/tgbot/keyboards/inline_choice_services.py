@@ -1,24 +1,46 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-from Nails_bot.tgbot.keyboards.inline_choice_services_data import choice_services_touch_button
+from Nails_bot.tgbot.keyboards.inline_choice_services_data import choice_services_touch_button, \
+    category_services_touch_button
+from Nails_bot.tgbot.services.db_api import db_commands
 
 
-def get_menu_choice_services_all(page):
+def get_menu_choice_services_all(page, category_all):
     '''Группы усоуг'''
+    # # Функция разбивает на пагинацию список
+    # def func_chunks_generators(lst, n):
+    #     for i in range(0, len(lst), n):
+    #         yield lst[i: i + n]
 
-    # Функция разбивает на пагинацию список
-    def func_chunks_generators(lst, n):
-        for i in range(0, len(lst), n):
-            yield lst[i: i + n]
+    # Функция разбивает на пагинацию словарь
+    def slice_data(my_dict, step):
+        res = []
+        len_item = len(my_dict)
+        two_res = {}
+        num = 0
+        for one, two in my_dict.items():
+            num += 1
+            two_res[one] = two
+            if len(two_res) == step:
+                res.append(two_res)
+                two_res = {}
+            if num == len_item and len(two_res) != 0:
+                res.append(two_res)
 
-    position = ['Брови', 'Мужской зал', 'Женские стрижки', 'Окрашивание', 'Укладки', 'Уходы для волос',
-                'Ногтевой  сервис', 'Все виды дизайна', 'Депиляция(шугаринг)', 'Депиляция(воск)', 'Наращивание ресниц']
-    new_position = list(func_chunks_generators(position, 5))
+        return res
 
-    inline_kb_full = InlineKeyboardMarkup(row_width=2)
+    position = {}
+    for ell in category_all:
+        position[ell.name] = ell.id
+    new_position = list(slice_data(position, 5))
+    print(new_position)
 
-    for ell in new_position[page]:
-        inline_kb_full.add(InlineKeyboardButton(text=ell, callback_data=f'touch_choice_services:{ell}:{page}:0'))
+    inline_kb_full = InlineKeyboardMarkup(row_width=1)
+
+    for name, id_category in new_position[page].items():
+        inline_kb_full.add(InlineKeyboardButton(text=name, callback_data=category_services_touch_button.new(
+            id_category=id_category
+        )))
     btn_next = InlineKeyboardButton(text='Далее >>>', callback_data=f'touch_this:next_page:{page}')
     btn_back = InlineKeyboardButton(text='<<< Назад', callback_data=f'touch_this:back_page:{page}')
     if page != len(new_position) - 1:
@@ -28,11 +50,10 @@ def get_menu_choice_services_all(page):
             inline_kb_full.add(btn_next)
     else:
         inline_kb_full.add(btn_back)
-    print(f'inline_kb_full = = = {inline_kb_full}')
     return inline_kb_full
 
 
-def get_menu_service():
+def get_menu_service(all_services):
     '''Определенные услуги
     !!!!! Нельзя много данных использовать в callback_data, тянуть данные по id'''
 
@@ -50,16 +71,13 @@ def get_menu_service():
 
     inline_kb_services = InlineKeyboardMarkup(row_width=1)
 
-    for ell in men_room:
-        inline_kb_services.add(InlineKeyboardButton(text=ell,
+    for ell in all_services:
+        inline_kb_services.add(InlineKeyboardButton(text=f'{ell.name} - {ell.price}',
                                                     callback_data=f'touch_choice_services:main:100:0'))
-
-    print(inline_kb_services)
     return inline_kb_services
 
 
 def get_menu_choice_services(sum_price):
-    print(type(sum_price))
     menu = InlineKeyboardMarkup(row_width=2,
                                 inline_keyboard=[
                                     [
