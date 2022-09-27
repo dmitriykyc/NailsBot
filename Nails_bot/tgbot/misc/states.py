@@ -11,3 +11,9 @@ class FeedbackState(StatesGroup):
     Q1 = State()
     Q2 = State()
     Q3 = State()
+
+class ChooseServices(StatesGroup):
+    start_choose = State()
+    choose = State()
+    finish = State()
+    choose_master = State()

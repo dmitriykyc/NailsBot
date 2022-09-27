@@ -82,3 +82,8 @@ async def select_services_from_category(id_category: int):
     '''Выборка услуг из категории'''
     services = await Services.query.where(Services.category_id == id_category).gino.all()
     return services
+
+async def select_service(id_services: int):
+    ''''''
+    service = await Services.get(id_services)
+    return service

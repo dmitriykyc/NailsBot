@@ -5,11 +5,13 @@ from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.fsm_storage.redis import RedisStorage2
 
+from Nails_bot.tgbot.handlers.entry_master_to_services import register_entry_master_to_services
+from Nails_bot.tgbot.handlers.entry_services_to_master import register_entry_services_to_master
 from Nails_bot.tgbot.handlers.feedback import register_feedback_handler
 from Nails_bot.tgbot.handlers.get_photo import register_get_photo
 from Nails_bot.tgbot.handlers.make_an_entry import register_make_an_entry_bot
 from Nails_bot.tgbot.handlers.start_bot import register_start_bot
-from Nails_bot.tgbot.handlers.tests import register_tests_hendlers
+# from Nails_bot.tgbot.handlers.tests import register_tests_hendlers
 from tgbot.config import load_config
 from tgbot.filters.admin import AdminFilter
 # from tgbot.middlewares.environment import EnvironmentMiddleware
@@ -27,10 +29,12 @@ def register_all_filters(dp):
 
 
 def register_all_handlers(dp):
+    register_entry_services_to_master(dp)
+    register_entry_master_to_services(dp)
     register_feedback_handler(dp)
     register_get_photo(dp)
     # register_hand_about_master(dp)
-    register_tests_hendlers(dp)
+    # register_tests_hendlers(dp)
     register_start_bot(dp)
     register_make_an_entry_bot(dp)
 

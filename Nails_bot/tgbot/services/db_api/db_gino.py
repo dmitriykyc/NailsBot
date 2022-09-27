@@ -37,6 +37,7 @@ class TimedBaseModel(BaseModel):
 
 
 async def on_startup(dispatcher: Dispatcher):
-    print('Connect to BD')
     await db.set_bind(config.db.postgres_uri)
-    print('Connect is Done')
+
+async def close_startup(dispatcher: Dispatcher):
+    await db.pop_bind().close()

@@ -6,7 +6,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from Nails_bot.tgbot.keyboards.inline_datetime_data import create_datetime, ignore_callback
 
 
-def get_menu_years():
+def get_menu_years(way):
     '''Выбор года'''
     year = datetime.now().year
     menu = InlineKeyboardMarkup(row_width=1,
@@ -19,7 +19,8 @@ def get_menu_years():
                                                                  year=year,
                                                                  month='None',
                                                                  day='None',
-                                                                 time='None'
+                                                                 time='None',
+                                                                 way=way
                                                              )),
                                         InlineKeyboardButton(text='2023',
                                                              callback_data=create_datetime.new(
@@ -28,7 +29,8 @@ def get_menu_years():
                                                                  year=year + 1,
                                                                  month='None',
                                                                  day='None',
-                                                                 time='None'
+                                                                 time='None',
+                                                                 way=way
                                                              ))
                                     ]
                                 ])
@@ -36,18 +38,15 @@ def get_menu_years():
     return menu
 
 
-def get_menu_month(year):
+def get_menu_month(year, way):
     '''Выбор месяца'''
-    if year == str(datetime.now().year):
-        now_month = datetime.now().month
-        months = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
-                  'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
-        if now_month > 9:
-            months = months[now_month - 1:]
-        else:
-            months = months[now_month - 1:now_month + 2]
+    now_month = datetime.now().month
+    months = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+              'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
+    if now_month > 9:
+        months = months[now_month - 1:]
     else:
-        months = ['Январь', 'Февраль', 'Март']
+        months = months[now_month - 1:now_month + 2]
 
     menu2 = InlineKeyboardMarkup(row_width=2,
                                  inline_keyboard=[
@@ -59,7 +58,8 @@ def get_menu_month(year):
                                                                   year=year,
                                                                   month=pos + 1,
                                                                   day='None',
-                                                                  time='None'
+                                                                  time='None',
+                                                                  way=way
                                                               )) for pos, ell in enumerate(months)
                                      ]
                                  ])
@@ -67,14 +67,14 @@ def get_menu_month(year):
     return menu2
 
 
-def get_menu_day(year, month):
+def get_menu_day(year, month, way):
     '''Выбор дня'''
     inline_kb = InlineKeyboardMarkup(row_width=7)
     inline_kb.row()
     for day in ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"]:
         inline_kb.insert(InlineKeyboardButton(day, callback_data=ignore_callback.new(
-                    step='IGNORE'
-                )))
+            step='IGNORE'
+        )))
     #
     month_calendar = calendar.monthcalendar(int(year), int(month))
 
@@ -91,13 +91,14 @@ def get_menu_day(year, month):
                     year=year,
                     month=month,
                     day='1',
-                    time='None'
+                    time='None',
+                    way=way
                 )
             ))
     return inline_kb
 
 
-def get_menu_time(year, month, day):
+def get_menu_time(year, month, day, way):
     menu = InlineKeyboardMarkup(row_width=1,
                                 inline_keyboard=[
                                     [
@@ -108,7 +109,8 @@ def get_menu_time(year, month, day):
                                                                  year=year,
                                                                  month=month,
                                                                  day=day,
-                                                                 time='10-00'
+                                                                 time='10-00',
+                                                                 way=way
                                                              )),
                                         InlineKeyboardButton(text='20:00',
                                                              callback_data=create_datetime.new(
@@ -117,7 +119,8 @@ def get_menu_time(year, month, day):
                                                                  year=year,
                                                                  month=month,
                                                                  day=day,
-                                                                 time='20-00'
+                                                                 time='20-00',
+                                                                 way=way
                                                              ))
                                     ]
                                 ])

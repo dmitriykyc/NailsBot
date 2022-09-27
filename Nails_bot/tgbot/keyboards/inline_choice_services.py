@@ -1,12 +1,14 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from Nails_bot.tgbot.keyboards.inline_choice_services_data import choice_services_touch_button, \
-    category_services_touch_button
+    category_services_touch_button, choose_data_and_time
+from Nails_bot.tgbot.keyboards.inline_datetime_data import create_datetime
 from Nails_bot.tgbot.services.db_api import db_commands
 
 
-def get_menu_choice_services_all(page, category_all):
+def get_menu_choice_services_all(page, category_all, way):
     '''Группы усоуг'''
+
     # # Функция разбивает на пагинацию список
     # def func_chunks_generators(lst, n):
     #     for i in range(0, len(lst), n):
@@ -39,7 +41,7 @@ def get_menu_choice_services_all(page, category_all):
 
     for name, id_category in new_position[page].items():
         inline_kb_full.add(InlineKeyboardButton(text=name, callback_data=category_services_touch_button.new(
-            id_category=id_category
+            id_category=id_category, way=way
         )))
     btn_next = InlineKeyboardButton(text='Далее >>>', callback_data=f'touch_this:next_page:{page}')
     btn_back = InlineKeyboardButton(text='<<< Назад', callback_data=f'touch_this:back_page:{page}')
@@ -50,52 +52,93 @@ def get_menu_choice_services_all(page, category_all):
             inline_kb_full.add(btn_next)
     else:
         inline_kb_full.add(btn_back)
+    inline_kb_full.add(InlineKeyboardButton(text='👉Я всё выбрал, го далее', callback_data=choose_data_and_time.new(
+        res_choose='hello', go_d_t='False', id_mast=''
+    )))
     return inline_kb_full
 
 
-def get_menu_service(all_services):
-    '''Определенные услуги
-    !!!!! Нельзя много данных использовать в callback_data, тянуть данные по id'''
-
-    brow = {
-        'Окрашивание бровей': 350,
-        'Оформление бровей': 350,
-        'Биотатуаж (окрашивание Хной)': 500,
-        'Окрашивание ресниц': 300
-    }
-    men_room = {
-        'Модельная Стрижка': 500,
-        'креативная': 500,
-        'стрижка': 350,
-        'стрижка2': 200}
-
+def get_menu_service(all_services, id_choose_already, way):
+    '''Определенные услуги'''
     inline_kb_services = InlineKeyboardMarkup(row_width=1)
 
     for ell in all_services:
-        inline_kb_services.add(InlineKeyboardButton(text=f'{ell.name} - {ell.price}',
-                                                    callback_data=f'touch_choice_services:main:100:0'))
+        after_text = '✅ ' if ell.id in id_choose_already else ''
+        inline_kb_services.add(InlineKeyboardButton(text=f'{after_text}{ell.name} - {ell.price}',
+                                                    callback_data=f'tcs:{ell.id}:{ell.price}:0:{way}'))
+    inline_kb_services.add(InlineKeyboardButton(text='Назад к категориям', callback_data=f'back_to_category_{way}'))
+    if way == 'stm':
+        inline_kb_services.add(
+            InlineKeyboardButton(text='👉Я всё выбрал, го далее', callback_data=choose_data_and_time.new(
+                res_choose='hello', go_d_t='False', id_mast='')))
+    else:
+        inline_kb_services.add(
+            InlineKeyboardButton(text='👉Я всё выбрал, давай записываться', callback_data='finish_mts'))
     return inline_kb_services
 
 
-def get_menu_choice_services(sum_price):
-    menu = InlineKeyboardMarkup(row_width=2,
-                                inline_keyboard=[
-                                    [
-                                        InlineKeyboardButton(text='Маникюр покрытие - 1500 руб.',
-                                                             callback_data=choice_services_touch_button.new(
-                                                                 name='manic',
-                                                                 price=1500,
-                                                                 sum_price=sum_price
-                                                             ))
-                                    ],
-                                    [
-                                        InlineKeyboardButton(text='звёздочки на пальцах - 200 руб.',
-                                                             callback_data=choice_services_touch_button.new(
-                                                                 name='pedic',
-                                                                 price=200,
-                                                                 sum_price=sum_price
-                                                             ))
-                                    ]
-                                ])
+def get_done_menu(way):
+    '''Подтверждение выбранных услуг и переход к дате'''
+    inline_done_menu = InlineKeyboardMarkup(row_width=1)
+    inline_done_menu.add(InlineKeyboardButton(text='👍Всё верно, выбрать дату', callback_data=create_datetime.new(
+        step='start',
+        master='Elena',
+        year='2022',
+        month='',
+        day='None',
+        time='None',
+        way=way)))  # choose_data_and_time.new( res_choose='hello', go_d_t='True', id_mast=''))
+    inline_done_menu.add(InlineKeyboardButton(text='🖌Изменить', callback_data='back_to_category'))
 
+    return inline_done_menu
+
+
+def get_done_menu_mts(way):
+    '''Подтверждение выбранных услуг и переход к дате'''
+    inline_done_menu = InlineKeyboardMarkup(row_width=1)
+    inline_done_menu.add(InlineKeyboardButton(text='👍Всё выбрал, записаться.',
+                                              callback_data='done_make_an_entry'))  # choose_data_and_time.new( res_choose='hello', go_d_t='True', id_mast=''))
+    inline_done_menu.add(InlineKeyboardButton(text='🖌Изменить', callback_data='back_to_category'))
+
+    return inline_done_menu
+
+
+# def get_menu_choice_services(sum_price):
+#     menu = InlineKeyboardMarkup(row_width=2,
+#                                 inline_keyboard=[
+#                                     [
+#                                         InlineKeyboardButton(text='Маникюр покрытие - 1500 руб.',
+#                                                              callback_data=choice_services_touch_button.new(
+#                                                                  name='manic',
+#                                                                  price=1500,
+#                                                                  sum_price=sum_price
+#                                                              ))
+#                                     ],
+#                                     [
+#                                         InlineKeyboardButton(text='звёздочки на пальцах - 200 руб.',
+#                                                              callback_data=choice_services_touch_button.new(
+#                                                                  name='pedic',
+#                                                                  price=200,
+#                                                                  sum_price=sum_price
+#                                                              ))
+#                                     ]
+#                                 ])
+#
+#     return menu
+
+
+def choose_master():
+    menu = InlineKeyboardMarkup(row_width=1,
+                                inline_keyboard=[[
+                                    InlineKeyboardButton(text='Выбрать мастера', callback_data='choose_master')
+                                ]])
+
+    return menu
+
+
+def inline_choose_category():
+    menu = InlineKeyboardMarkup(row_width=1,
+                                inline_keyboard=[[
+                                    InlineKeyboardButton(text='Выбрать услуги', callback_data='choose_category')
+                                ]])
     return menu
