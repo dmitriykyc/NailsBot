@@ -2,7 +2,7 @@ from aiogram import Dispatcher, types
 from aiogram.dispatcher.storage import FSMContext
 from aiogram.types import CallbackQuery
 
-from Nails_bot.tgbot.keyboards.inline_choice_master_data import touch_button_master
+from Nails_bot.tgbot.keyboards.inline_choice_master_data import touch_button_master, touch_about_master
 # from Nails_bot.tgbot.keyboards.inline_choice_services import get_menu_choice_services, get_menu_choice_services_all, \
 #     get_menu_service, get_done_menu, choose_master
 # from Nails_bot.tgbot.keyboards.inline_choice_services_data import choice_services_touch_button, pagination, \
@@ -10,7 +10,6 @@ from Nails_bot.tgbot.keyboards.inline_choice_master_data import touch_button_mas
 from Nails_bot.tgbot.keyboards.inline_choice_master import get_menu
 from Nails_bot.tgbot.keyboards.inline_datatime import get_menu_years, get_menu_month, get_menu_day, get_menu_time
 from Nails_bot.tgbot.keyboards.inline_datetime_data import create_datetime
-from Nails_bot.tgbot.keyboards.reply_choice_type import menu_choice_type
 from Nails_bot.tgbot.misc.states import ChooseServices
 from Nails_bot.tgbot.services.db_api import db_commands
 from Nails_bot.tgbot.services.db_api.db_commands import get_all_masters, select_master, select_services_from_category, \
@@ -29,7 +28,7 @@ async def result_message_sum(data):
     return [choose_service_list, sum_price]
 
 
-def register_make_an_entry_bot(dp: Dispatcher):
+# def register_make_an_entry_bot(dp: Dispatcher):
     #     # Нажата кнопка "Записаться"
     # @dp.message_handler(text='Записаться')
     # async def make_an_entry(messages: types.Message):
@@ -48,17 +47,15 @@ def register_make_an_entry_bot(dp: Dispatcher):
     #
     #     await close_startup(dp)
 
-    # Нажата кнопка "О Мастере"
-    @dp.callback_query_handler(touch_button_master.filter(aboute='True'))
-    async def message_about_master(call: CallbackQuery, callback_data):
-        await on_startup(dp)
-        master = await select_master(id_master=int(callback_data["id"]))
-        photo_master = master.photo_master_id
-
-        await call.message.answer_photo(photo_master, caption=f'Мастер: {master.name}\n'
-                                                              f'Рейтинг: 5 из 5\n'
-                                                              f'Призвание: {master.disc_master}')
-        await close_startup(dp)
+    # # Нажата кнопка "О Мастере"
+    # @dp.callback_query_handler(touch_about_master.filter())
+    # async def message_about_master(call: CallbackQuery, callback_data):
+    #     await on_startup(dp)
+    #     master = await select_master(id_master=int(callback_data["id"]))
+    #     photo_master = master.photo_master_id
+    #
+    #     await call.message.edit_caption(f'Описание мастера, на сколько он хорош', reply_markup=get_menu())
+    #     await close_startup(dp)
 
     # # Нажата кнопка "Выбрать" на карточке мастера или переход из callback после выбоа услуг
     # @dp.callback_query_handler(touch_button.filter(aboute='False') | choose_data_and_time.filter(go_d_t='True'))

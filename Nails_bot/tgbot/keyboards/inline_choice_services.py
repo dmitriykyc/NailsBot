@@ -9,11 +9,6 @@ from Nails_bot.tgbot.services.db_api import db_commands
 def get_menu_choice_services_all(page, category_all, way):
     '''Группы усоуг'''
 
-    # # Функция разбивает на пагинацию список
-    # def func_chunks_generators(lst, n):
-    #     for i in range(0, len(lst), n):
-    #         yield lst[i: i + n]
-
     # Функция разбивает на пагинацию словарь
     def slice_data(my_dict, step):
         res = []
@@ -35,7 +30,6 @@ def get_menu_choice_services_all(page, category_all, way):
     for ell in category_all:
         position[ell.name] = ell.id
     new_position = list(slice_data(position, 5))
-    print(new_position)
 
     inline_kb_full = InlineKeyboardMarkup(row_width=1)
 
@@ -43,8 +37,8 @@ def get_menu_choice_services_all(page, category_all, way):
         inline_kb_full.add(InlineKeyboardButton(text=name, callback_data=category_services_touch_button.new(
             id_category=id_category, way=way
         )))
-    btn_next = InlineKeyboardButton(text='Далее >>>', callback_data=f'touch_this:next_page:{page}')
-    btn_back = InlineKeyboardButton(text='<<< Назад', callback_data=f'touch_this:back_page:{page}')
+    btn_next = InlineKeyboardButton(text='Далее >>>', callback_data=f'touch_this:next_page:{page}:{way}')
+    btn_back = InlineKeyboardButton(text='<<< Назад', callback_data=f'touch_this:back_page:{page}:{way}')
     if page != len(new_position) - 1:
         if page != 0:
             inline_kb_full.add(btn_back, btn_next)
@@ -52,8 +46,8 @@ def get_menu_choice_services_all(page, category_all, way):
             inline_kb_full.add(btn_next)
     else:
         inline_kb_full.add(btn_back)
-    inline_kb_full.add(InlineKeyboardButton(text='👉Я всё выбрал, го далее', callback_data=choose_data_and_time.new(
-        res_choose='hello', go_d_t='False', id_mast=''
+    inline_kb_full.add(InlineKeyboardButton(text='👉 Готово, продолжить', callback_data=choose_data_and_time.new(
+        res_choose='hello', go_d_t='False', id_mast='', way=way
     )))
     return inline_kb_full
 
@@ -66,29 +60,29 @@ def get_menu_service(all_services, id_choose_already, way):
         after_text = '✅ ' if ell.id in id_choose_already else ''
         inline_kb_services.add(InlineKeyboardButton(text=f'{after_text}{ell.name} - {ell.price}',
                                                     callback_data=f'tcs:{ell.id}:{ell.price}:0:{way}'))
-    inline_kb_services.add(InlineKeyboardButton(text='Назад к категориям', callback_data=f'back_to_category_{way}'))
+    inline_kb_services.add(InlineKeyboardButton(text='↩ Назад к категориям', callback_data=f'back_to_category_{way}'))
     if way == 'stm':
         inline_kb_services.add(
-            InlineKeyboardButton(text='👉Я всё выбрал, го далее', callback_data=choose_data_and_time.new(
-                res_choose='hello', go_d_t='False', id_mast='')))
+            InlineKeyboardButton(text='👉 Готово, продолжить.', callback_data=choose_data_and_time.new(
+                res_choose='hello', go_d_t='False', id_mast='', way=way)))
     else:
         inline_kb_services.add(
-            InlineKeyboardButton(text='👉Я всё выбрал, давай записываться', callback_data='finish_mts'))
+            InlineKeyboardButton(text='👉 Готово, продолжить.', callback_data='finish_mts'))
     return inline_kb_services
 
 
 def get_done_menu(way):
-    '''Подтверждение выбранных услуг и переход к дате'''
+    '''Переход к дате'''
     inline_done_menu = InlineKeyboardMarkup(row_width=1)
     inline_done_menu.add(InlineKeyboardButton(text='👍Всё верно, выбрать дату', callback_data=create_datetime.new(
         step='start',
-        master='Elena',
+        master='Elena11',
         year='2022',
         month='',
         day='None',
         time='None',
         way=way)))  # choose_data_and_time.new( res_choose='hello', go_d_t='True', id_mast=''))
-    inline_done_menu.add(InlineKeyboardButton(text='🖌Изменить', callback_data='back_to_category'))
+    # inline_done_menu.add(InlineKeyboardButton(text='🖌Изменить', callback_data='back_to_category'))
 
     return inline_done_menu
 
@@ -96,11 +90,16 @@ def get_done_menu(way):
 def get_done_menu_mts(way):
     '''Подтверждение выбранных услуг и переход к дате'''
     inline_done_menu = InlineKeyboardMarkup(row_width=1)
-    inline_done_menu.add(InlineKeyboardButton(text='👍Всё выбрал, записаться.',
+    inline_done_menu.add(InlineKeyboardButton(text='👍 Готово, записаться.',
                                               callback_data='done_make_an_entry'))  # choose_data_and_time.new( res_choose='hello', go_d_t='True', id_mast=''))
-    inline_done_menu.add(InlineKeyboardButton(text='🖌Изменить', callback_data='back_to_category'))
+    inline_done_menu.add(InlineKeyboardButton(text='🖌 Изменить', callback_data='back_to_category'))
 
     return inline_done_menu
+
+
+def get_back_menu_datetime(way):
+    ''' Вернуться и изменить дату и время '''
+    inline_back_menu = InlineKeyboardMarkup(row_width=1)
 
 
 # def get_menu_choice_services(sum_price):
@@ -136,9 +135,20 @@ def choose_master():
     return menu
 
 
-def inline_choose_category():
+def inline_choose_category(way):
     menu = InlineKeyboardMarkup(row_width=1,
                                 inline_keyboard=[[
-                                    InlineKeyboardButton(text='Выбрать услуги', callback_data='choose_category')
+                                    InlineKeyboardButton(text='↩ Нет, изменить дату и время',
+                                                         callback_data=create_datetime.new(
+                                                             step='start',
+                                                             master='Elena11',
+                                                             year='2022',
+                                                             month='',
+                                                             day='None',
+                                                             time='None',
+                                                             way=way))
+                                ], [
+                                    InlineKeyboardButton(text='✅ Всё верно, выбрать услуги', callback_data='choose_category')
                                 ]])
     return menu
+

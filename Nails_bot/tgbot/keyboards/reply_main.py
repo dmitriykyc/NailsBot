@@ -6,8 +6,16 @@ main_menu = ReplyKeyboardMarkup(
             KeyboardButton(text='Записаться')
         ],
         [
-            KeyboardButton(text='О нас'),
-            KeyboardButton(text='Виды услуг и цены')
+            KeyboardButton(text='Личный кабинет')
+        ],
+        [
+            KeyboardButton(text='О нас')
+        ],
+        [
+            KeyboardButton(text='🤩Как сделать такого бота себе?🤩')
+        ],
+[
+            KeyboardButton(text='🤔Что ещё умеет этот бот?🤔')
         ]
     ], resize_keyboard=True
 )

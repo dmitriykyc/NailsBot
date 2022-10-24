@@ -1,14 +1,16 @@
 from asyncpg import UniqueViolationError
+from sqlalchemy import and_
 
+from Nails_bot.tgbot.services.db_api.models.appointment_services import AppointmentServices, Appointment
 from Nails_bot.tgbot.services.db_api.models.category_services import CategoryServices, Services
 from Nails_bot.tgbot.services.db_api.models.masters import Master
-from Nails_bot.tgbot.services.db_api.models.user import User3
+from Nails_bot.tgbot.services.db_api.models.user import User
 
 
 async def add_user(user_id: int, name: str):
     '''Добавление пользователя'''
     try:
-        user = User3(user_id=user_id, name=name)
+        user = User(user_id=user_id, name=name)
         await user.create()
     except UniqueViolationError:
         print(f'User {user_id=}, {name=}, is not append')
@@ -37,7 +39,7 @@ async def get_all_masters():
 
 async def select_user(id_user: int):
     '''Выбрать одного пользователя'''
-    user = await User3.get(id_user)
+    user = await User.get(id_user)
     return user
 
 
@@ -49,8 +51,9 @@ async def select_master(id_master: int):
 
 async def update_user(id_user: int, name: str):
     '''Обновить юзера'''
-    user = await User3.get(id_user)
+    user = await User.get(id_user)
     await user.update(name=name).apply()
+
 
 async def update_master(master_id: int, photo_master_id: str):
     '''Обновить мастера'''
@@ -66,6 +69,7 @@ async def add_category_srvices(name: str, active: bool):
     except UniqueViolationError:
         print(f'Category {name=}, is not append')
 
+
 async def add_services(name: str, price: int, category_id: int):
     '''Добавление усолуг к категории'''
     try:
@@ -74,16 +78,60 @@ async def add_services(name: str, price: int, category_id: int):
     except:
         print(f'Category {name=}, is not append')
 
+
 async def get_all_services_category():
     '''Забрать все категории услуг'''
     return await CategoryServices.query.gino.all()
+
 
 async def select_services_from_category(id_category: int):
     '''Выборка услуг из категории'''
     services = await Services.query.where(Services.category_id == id_category).gino.all()
     return services
 
+
 async def select_service(id_services: int):
     ''''''
     service = await Services.get(id_services)
     return service
+
+
+async def add_services_to_appointment(id_appointment: int, id_services: int):
+    try:
+        data = AppointmentServices(id_appointment=id_appointment, id_services=id_services)
+        await data.create()
+    except:
+        print(f'AppointmentServices {id_appointment=}, is not append')
+
+
+async def add_appointment(user_id: int, id_master: int, datetime):
+    data = Appointment(user_id=user_id, id_master=id_master, datetime=datetime)
+    await data.create()
+
+
+async def get_all_dict_appointment(id_appointment):
+    appointment = await Appointment.get(id_appointment)
+    id_master = appointment.id_master
+    datetime = appointment.datetime
+    services = await AppointmentServices.query.where(AppointmentServices.id_appointment == id_appointment).gino.all()
+    all_services_list = [ell.id_services for ell in services]
+    active = appointment.active
+    result_appointment = {'id_master': id_master,
+                          'datetime': datetime,
+                          'services': all_services_list,
+                          'active': active}
+
+    return result_appointment
+
+async def get_all_list_appointment_from_user(user_id: int):
+    all_appointment = await Appointment.query.where(and_(
+        Appointment.user_id == user_id,
+        Appointment.active)).gino.all()
+    res_ell = [ell.id for ell in all_appointment]
+    return res_ell
+
+async def edit_active_appointment(id_appointment):
+    appointment = await Appointment.get(id_appointment)
+    await appointment.update(active=False).apply()
+
+

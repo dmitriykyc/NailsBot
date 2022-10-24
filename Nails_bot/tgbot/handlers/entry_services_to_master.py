@@ -1,9 +1,11 @@
+import datetime
+
 from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
-from aiogram.types import CallbackQuery
+from aiogram.types import CallbackQuery, ReplyKeyboardRemove
 
-from Nails_bot.tgbot.keyboards.inline_choice_master import get_menu
-from Nails_bot.tgbot.keyboards.inline_choice_master_data import touch_button_master
+from Nails_bot.tgbot.keyboards.inline_choice_master import get_menu, get_menu_two
+from Nails_bot.tgbot.keyboards.inline_choice_master_data import touch_button_master, touch_about_master
 from Nails_bot.tgbot.keyboards.inline_choice_services import get_menu_choice_services_all, get_menu_service, \
     get_done_menu, choose_master
 from Nails_bot.tgbot.keyboards.inline_choice_services_data import pagination, category_services_touch_button, \
@@ -11,8 +13,10 @@ from Nails_bot.tgbot.keyboards.inline_choice_services_data import pagination, ca
 from Nails_bot.tgbot.keyboards.inline_datatime import get_menu_month, get_menu_day, get_menu_time
 from Nails_bot.tgbot.keyboards.inline_datetime_data import create_datetime
 from Nails_bot.tgbot.services.db_api import db_commands
-from Nails_bot.tgbot.services.db_api.db_commands import select_service, select_services_from_category, get_all_masters
+from Nails_bot.tgbot.services.db_api.db_commands import select_service, select_services_from_category, get_all_masters, \
+    add_appointment, add_services_to_appointment, select_master
 from Nails_bot.tgbot.services.db_api.db_gino import on_startup, close_startup
+from Nails_bot.tgbot.services.db_api.models.appointment_services import Appointment
 
 
 async def result_message_sum(data):
@@ -26,12 +30,38 @@ async def result_message_sum(data):
     return [choose_service_list, sum_price]
 
 
+async def create_appointment_bd(data_state, call, id_master):
+    print(50*'1-1')
+    date_and_time_str = f'{data_state["day"]}.{data_state["month"]}.2022 {data_state["time"]}:00'
+    date_and_time = datetime.datetime.strptime(date_and_time_str, '%d.%m.%Y %H:%M')
+    user_id = call['from']['id']
+    data_new_appointment = Appointment(user_id=user_id, id_master=int(id_master), datetime=date_and_time)
+    await data_new_appointment.create()
+    for ell in data_state['services']:
+        await add_services_to_appointment(data_new_appointment.id, ell)
+
+    return date_and_time_str
+
+
 def register_entry_services_to_master(dp: Dispatcher):
+    print(50*'10')
+    # Нажата кнопка "О Мастере"
+    @dp.callback_query_handler(touch_about_master.filter(way='stm'))
+    async def message_about_master(call: CallbackQuery, callback_data):
+        await on_startup(dp)
+        master = await select_master(id_master=int(callback_data["id"]))
+        photo_master = master.photo_master_id
+
+        await call.message.edit_caption(f'Описание мастера, на сколько он хорош', reply_markup=get_menu_two(
+            master.master_id, 'stm'))
+        await close_startup(dp)
+
+
     # Пробегаемся по выбору года, месяца, даты, времени
     @dp.callback_query_handler(create_datetime.filter(way='stm'))
     async def touch_datetime(call: CallbackQuery, callback_data, state: FSMContext):
 
-        print('*' * 100)
+        print(50 * '9')
 
         await call.answer()  # Закрываем часы
         if callback_data['step'] == 'start':
@@ -66,10 +96,7 @@ def register_entry_services_to_master(dp: Dispatcher):
 
     @dp.callback_query_handler(text='choose_master')
     async def sent_masters(call: CallbackQuery):
-        print(call)
-
-        print('*' * 100)
-
+        print(50 * '8')
         await on_startup(dp)  # Подключаемся к БД
         masters = await get_all_masters()  # Получаем всех мастеров
         for ell in masters:
@@ -83,49 +110,43 @@ def register_entry_services_to_master(dp: Dispatcher):
     # Нажата кнопка "Выбрать" на карточке мастера
     @dp.callback_query_handler(touch_button_master.filter(aboute='False') and touch_button_master.filter(way='stm'))
     async def touch_inline_button(call: CallbackQuery, callback_data, state: FSMContext):
-
-        print('*' * 100)
-
+        print(50 * '7')
+        await on_startup(dp)  # Подключаемся к БД
         id_master = callback_data['id_mast']
         await state.update_data(id_master=id_master)
         data_state = await state.get_data()
 
-        await on_startup(dp)  # Подключаемся к БД
+        date_time = await create_appointment_bd(data_state, call, id_master)
+
         data_for_text = await result_message_sum(data_state['services'])  # Получаем данные для текста
         master = await db_commands.select_master(int(data_state['id_master']))
-        await call.message.answer(f'Вы записаниы к мастеру: {master.name} \n'
-                                  f'Дата: {data_state["day"]}{data_state["month"]}.2022\n'
+        await call.message.answer(f'✅ Вы записаны к мастеру: {master.name} \n'
+                                  f'🗓 Дата: {date_time}\n\n'
                                   f'На услуги: \n'
                                   f'{data_for_text[0]}\n\n'
-                                  f'Общая стоимость: {data_for_text[1]} руб.\n\n'
-                                  f'Ждём вас по адрему: Г. Москва, Ул. Ростокино 15А ')
+                                  f'💴  Общая стоимость: {data_for_text[1]} руб.\n'
+                                  f'📍 Ждём вас по адрему: Г. Москва, Ул. Охотный ряд, д. 1 ')
         await close_startup(dp)  # Закрываем БД
 
-    @dp.message_handler(text='Выбрать услугу')
-    async def choose_service(message: types.Message, state: FSMContext):
+    @dp.callback_query_handler(text='choose_service_main')
+    async def choose_service(call: CallbackQuery, state: FSMContext):
         '''Обрабатываем Reply Button "Выбрать услугу" '''
-
-        print('*' * 100)
-
+        print(100 * '6')
         await on_startup(dp)  # Подключаем БД
         category_all = await db_commands.get_all_services_category()  # Тянем из БД все категории
         data_state = await state.get_data()
         print(data_state)
-
-        await message.answer(f'Отлично, выберите нужный раздел. \n\n'
+        await call.message.edit_text(f'Отлично, выберите нужный раздел. \n\n'
                              f'Можно выбрать несколько услуг.',
                              reply_markup=get_menu_choice_services_all(0, category_all, 'stm'))
         await state.update_data(services=[], sum_price=0)  # Задаём состояние
         await close_startup(dp)  # Отключаем БД
 
-    @dp.callback_query_handler(pagination.filter(name='next_page') | pagination.filter(name='back_page'))
+    @dp.callback_query_handler(pagination.filter(way='stm'))
     async def answer_callback(call: CallbackQuery, callback_data):
         '''Обрабатывает кнопки далее и назад в категориях'''
-
-        print('норм' + '*' * 100)
-
+        print(50 * '5')
         await call.answer()
-
         # Создаём пагинацию
         page = int(callback_data['page'])
         back_or_next = callback_data['name']
@@ -141,15 +162,13 @@ def register_entry_services_to_master(dp: Dispatcher):
     @dp.callback_query_handler(category_services_touch_button.filter(way='stm'))
     async def services_edit_message(call: CallbackQuery, callback_data, state: FSMContext):
         '''Обрабатывает когда переходим из категории к кнопкам услуг'''
-
-        print('*' * 100)
-
+        print(50 * '4')
         id_category = int(callback_data['id_category'])  # Забираем категорию
         await on_startup(dp)  # Подключаемся к БД
         services = await select_services_from_category(id_category)  # Тянем все услуги из БД
         state_data = await state.get_data()  # Забираем информацию из состояния
         data_for_text = await result_message_sum(state_data['services'])  # Получаем данные для текста
-        await call.message.edit_text(f'Выберите услугу.\n\n'
+        await call.message.edit_text(f'Выберите услуги (Можно несколько).\n\n'
                                      f'Ранее выбранные услуги:{data_for_text[0]}\n'
                                      f'Общая сумма: {data_for_text[1]} руб.',
                                      reply_markup=get_menu_service(services, state_data['services'], 'stm'))
@@ -160,9 +179,7 @@ def register_entry_services_to_master(dp: Dispatcher):
     @dp.callback_query_handler(choice_services_touch_button.filter(way='stm'))
     async def services_edit_message(call: CallbackQuery, callback_data, state: FSMContext):
         '''Обрабатывает каждое нажатие на кнопках с услугами'''
-
-        print('q*' * 100)
-
+        print(50 * '3')
         all_services = await state.get_data()
         list_services = all_services["services"]  # Забираем все выбранные услуги
 
@@ -189,9 +206,7 @@ def register_entry_services_to_master(dp: Dispatcher):
     @dp.callback_query_handler(text='back_to_category_stm')
     async def choose_service2(call: CallbackQuery, state: FSMContext):
         '''Обрабатывает кнопку "Назад в категорию"'''
-
-        print('*' * 100)
-
+        print(50 * '2')
         await on_startup(dp)  # Подключаемся к БД
         category_all = await db_commands.get_all_services_category()  # Тянем из БД все категории
         call_data = await state.get_data()  # Забираем данные из состояния
@@ -201,12 +216,10 @@ def register_entry_services_to_master(dp: Dispatcher):
                                      reply_markup=get_menu_choice_services_all(0, category_all, 'stm'))
         await close_startup(dp)  # Закрываем БД
 
-    @dp.callback_query_handler(choose_data_and_time.filter())
+    @dp.callback_query_handler(choose_data_and_time.filter(way='stm'))
     async def done_choose(call: CallbackQuery, callback_data, state: FSMContext):
         ''' Обрабатываем кнопку что пользователь набрал себе услуг, хочет записаться '''
-
-        print('*' * 100)
-
+        print(50 * '1')
         await on_startup(dp)  # Подключаемся к БД
         state_data = await state.get_data()  # Получаем данные из состояния
         data_for_text = await result_message_sum(state_data['services'])  # Формируем текст
