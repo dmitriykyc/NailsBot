@@ -37,6 +37,7 @@ def register_all_handlers(dp):
     register_entry_master_to_services(dp)
     register_feedback_handler(dp)
     register_get_photo(dp)
+
     # register_hand_about_master(dp)
     # register_tests_hendlers(dp)
     register_start_bot(dp)
