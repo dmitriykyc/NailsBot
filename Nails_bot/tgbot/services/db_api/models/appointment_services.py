@@ -2,7 +2,7 @@ import sqlalchemy
 from sqlalchemy import Column, Integer, DATETIME, DateTime, ForeignKey, sql, Boolean, BigInteger
 from sqlalchemy.orm import relationship
 
-from Nails_bot.tgbot.services.db_api.db_gino import TimedBaseModel
+from tgbot.services.db_api.db_gino import TimedBaseModel
 
 
 class Appointment(TimedBaseModel):

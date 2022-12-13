@@ -1,19 +1,29 @@
 from asyncpg import UniqueViolationError
-from sqlalchemy import and_
+import psycopg2
+from dotenv import load_dotenv
+import os
 
-from Nails_bot.tgbot.services.db_api.models.appointment_services import AppointmentServices, Appointment
-from Nails_bot.tgbot.services.db_api.models.category_services import CategoryServices, Services
-from Nails_bot.tgbot.services.db_api.models.masters import Master
-from Nails_bot.tgbot.services.db_api.models.user import User
+# from tgbot.services.db_api.models.appointment_services import AppointmentServices, Appointment
+# from tgbot.services.db_api.models.category_services import CategoryServices, Services
+# from tgbot.services.db_api.models.masters import Master
+# from tgbot.services.db_api.models.user import User
+
+def db_connect():
+    load_dotenv()
+    connect = psycopg2.connect(dbname=os.getenv("DB_NAME"), user=os.getenv("DB_USER"),
+                               password=os.getenv("DB_PASSWORD"), host=os.getenv("HOST"), port=os.getenv("DB_PORT"))
+    return connect
 
 
-async def add_user(user_id: int, name: str):
-    '''Добавление пользователя'''
-    try:
-        user = User(user_id=user_id, name=name)
-        await user.create()
-    except UniqueViolationError:
-        print(f'User {user_id=}, {name=}, is not append')
+
+
+# async def add_user(user_id: int, name: str):
+#     '''Добавление пользователя'''
+#     try:
+#         user = User(user_id=user_id, name=name)
+#         await user.create()
+#     except UniqueViolationError:
+#         print(f'User {user_id=}, {name=}, is not append')
 
 
 async def add_master(name: str, photo_master_id: str, disc_master: str):
@@ -37,10 +47,10 @@ async def get_all_masters():
     return await Master.query.gino.all()
 
 
-async def select_user(id_user: int):
-    '''Выбрать одного пользователя'''
-    user = await User.get(id_user)
-    return user
+# async def select_user(id_user: int):
+#     '''Выбрать одного пользователя'''
+#     user = await User.get(id_user)
+#     return user
 
 
 async def select_master(id_master: int):
@@ -49,10 +59,10 @@ async def select_master(id_master: int):
     return master
 
 
-async def update_user(id_user: int, name: str):
-    '''Обновить юзера'''
-    user = await User.get(id_user)
-    await user.update(name=name).apply()
+# async def update_user(id_user: int, name: str):
+#     '''Обновить юзера'''
+#     user = await User.get(id_user)
+#     await user.update(name=name).apply()
 
 
 async def update_master(master_id: int, photo_master_id: str):
@@ -133,5 +143,8 @@ async def get_all_list_appointment_from_user(user_id: int):
 async def edit_active_appointment(id_appointment):
     appointment = await Appointment.get(id_appointment)
     await appointment.update(active=False).apply()
+
+if __name__ == '__main__':
+    db_connect()
 
 

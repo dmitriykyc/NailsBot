@@ -4,3 +4,4 @@ gino
 aiogram~=2.18
 aioredis~=2.0
 environs~=9.0
+psycopg2-binary==2.9.5

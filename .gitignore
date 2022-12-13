@@ -1,1 +1,5 @@
-/Nails_bot/tgbot/services/old_gino/
+venv/
+.env
+.gitignore
+Nails.log
+D:/Programming/TG_BOTS/Nails_bot/Nails_bot/tgbot/media/masters_photo/photos/file_17.jpg

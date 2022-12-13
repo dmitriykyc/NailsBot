@@ -1,9 +1,9 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-from Nails_bot.tgbot.keyboards.inline_choice_services_data import choice_services_touch_button, \
+from tgbot.keyboards.inline_choice_services_data import choice_services_touch_button, \
     category_services_touch_button, choose_data_and_time
-from Nails_bot.tgbot.keyboards.inline_datetime_data import create_datetime
-from Nails_bot.tgbot.services.db_api import db_commands
+from tgbot.keyboards.inline_datetime_data import create_datetime
+from tgbot.services.db_api import db_commands
 
 
 def get_menu_choice_services_all(page, category_all, way):

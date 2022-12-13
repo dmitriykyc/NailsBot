@@ -1,6 +1,6 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-from Nails_bot.tgbot.keyboards.inline_name_user_data import touch_data_start_name
+from tgbot.keyboards.inline_name_user_data import touch_data_start_name
 
 
 def get_menu_name_user():

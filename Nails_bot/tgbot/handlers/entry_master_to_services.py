@@ -4,20 +4,20 @@ from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
 
-from Nails_bot.tgbot.keyboards.inline_choice_master import get_menu, get_menu_two
-from Nails_bot.tgbot.keyboards.inline_choice_master_data import touch_button_master, touch_about_master
-from Nails_bot.tgbot.keyboards.inline_choice_services import get_done_menu, inline_choose_category, \
+from tgbot.keyboards.inline_choice_master import get_menu, get_menu_two
+from tgbot.keyboards.inline_choice_master_data import touch_button_master, touch_about_master
+from tgbot.keyboards.inline_choice_services import get_done_menu, inline_choose_category, \
     get_menu_choice_services_all, get_menu_service, get_back_menu_datetime
-from Nails_bot.tgbot.keyboards.inline_choice_services_data import choose_data_and_time, pagination, \
+from tgbot.keyboards.inline_choice_services_data import choose_data_and_time, pagination, \
     category_services_touch_button, choice_services_touch_button
-from Nails_bot.tgbot.keyboards.inline_datatime import get_menu_month, get_menu_day, get_menu_time
-from Nails_bot.tgbot.keyboards.inline_datetime_data import create_datetime
-from Nails_bot.tgbot.keyboards.reply_choice_type import get_master_or_serv
-from Nails_bot.tgbot.services.db_api import db_commands
-from Nails_bot.tgbot.services.db_api.db_commands import select_service, get_all_masters, select_services_from_category, \
+from tgbot.keyboards.inline_datatime import get_menu_month, get_menu_day, get_menu_time
+from tgbot.keyboards.inline_datetime_data import create_datetime
+from tgbot.keyboards.reply_choice_type import get_master_or_serv
+from tgbot.services.db_api import db_commands
+from tgbot.services.db_api.db_commands import select_service, get_all_masters, select_services_from_category, \
     add_services_to_appointment, select_master
-from Nails_bot.tgbot.services.db_api.db_gino import on_startup, close_startup
-from Nails_bot.tgbot.services.db_api.models.appointment_services import Appointment
+from tgbot.services.db_api.db_gino import on_startup, close_startup
+from tgbot.services.db_api.models.appointment_services import Appointment
 
 
 async def result_message_sum(data):

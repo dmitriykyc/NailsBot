@@ -1,6 +1,6 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-from Nails_bot.tgbot.keyboards.inline_choice_master_data import touch_button_master, touch_about_master
+from tgbot.keyboards.inline_choice_master_data import touch_button_master, touch_about_master
 
 
 def get_menu(idx, way):

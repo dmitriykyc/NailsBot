@@ -1,19 +1,23 @@
+from asyncio.log import logger
+from hashlib import new
 from aiogram import types, Dispatcher
 from aiogram.dispatcher.storage import FSMContext
 from aiogram.types import CallbackQuery
 
-from Nails_bot.tgbot.keyboards.inline_name_user import get_menu_name_user
-from Nails_bot.tgbot.keyboards.inline_name_user_data import touch_data_start_name
-from Nails_bot.tgbot.keyboards.reply_main import main_menu
-from Nails_bot.tgbot.misc.states import CheckName
-from Nails_bot.tgbot.services.db_api import db_gino, db_commands
+from tgbot.keyboards.inline_name_user import get_menu_name_user
+from tgbot.keyboards.inline_name_user_data import touch_data_start_name
+from tgbot.keyboards.reply_main import main_menu
+from tgbot.misc.states import CheckName
+
+# from tgbot.services.db_api import db_gino, db_commands
+from tgbot.services.db_api import user_commands_db
 
 
 def register_start_bot(dp: Dispatcher):
     # Обрабатываем команду старт
     @dp.message_handler(commands='start')
     async def start_command(message: types.Message):
-        print('[v] Новый пользователь:\n'
+        logger.info('[v] Новый пользователь:\n'
               f'{message.from_user}\n'
               f'-------------------------------------------')
         await message.answer_photo(
@@ -26,13 +30,14 @@ def register_start_bot(dp: Dispatcher):
                     f'и мы обязательно напомним о Вашем посещении накануне.\n\n'
                     f'Приятного пользования!\nНо, давайте для начала познакомимся👇')
 
-        name_user = message.from_user["first_name"]
+        name_user = message.from_user.first_name
+        username = message.from_user.username
         if name_user:
             await message.answer(
-                f'Вам будет комфортно, если мы будем обращаться к Вам по имени: {message.from_user["first_name"]}?',
+                f'Вам будет комфортно, если мы будем обращаться к Вам по имени: {name_user}?',
                 reply_markup=get_menu_name_user())
         else:
-            await message.answer('Подскажите, как Вас зовут?')
+            await message.answer('Пожалуйста, напишите как Вас зовут?👇')
             await CheckName.Q2.set()
 
     # Проверка имени пользователя из профиля в телеграм
@@ -45,13 +50,15 @@ def register_start_bot(dp: Dispatcher):
                 f'Очень приятно, {call.from_user["first_name"]}, можете воспользоваться нашим меню ниже.\n\n'
                 f'(Если меню спряталось, нажмите 🎛, рядом с кнопкой микрофона)',
                 reply_markup=main_menu)
-            await db_gino.on_startup(dp)
             user_id = call.from_user['id']
-            user = await db_commands.select_user(id_user=user_id)
+            user = user_commands_db.select_user(user_id)
+            print(user)
             if user:
-                await db_commands.update_user(id_user=user_id, name=call.from_user["first_name"])
+                user_commands_db.update_user(id_user=user_id, name=call.from_user["first_name"])
             else:
-                await db_commands.add_user(user_id=user_id, name=call.from_user["first_name"])
+                user_commands_db.add_user(user_id=user_id, 
+                    first_name=call.from_user.first_name, 
+                    username=call.from_user.username)
 
         elif callback_data['choice_button'] == 'False':
             await call.message.answer(f'Напишите нам Ваше имя:')
@@ -60,17 +67,17 @@ def register_start_bot(dp: Dispatcher):
     # Изменение имени, проверить состояния, нужно ли их вообще использовать
     @dp.message_handler(state=CheckName.Q2)
     async def rename_user(message: types.Message, state: FSMContext):
-
-        await db_gino.on_startup(dp)
+        await state.finish()
         new_name = message.text
         user_id = message.from_user['id']
         await state.update_data(new_name_user=new_name)
-        user = await db_commands.select_user(id_user=user_id)
+        user = user_commands_db.select_user(user_id)
         if user:
-            await db_commands.update_user(id_user=user_id, name=new_name)
+            user_commands_db.update_user(user_id, name=new_name)
         else:
-            await db_commands.add_user(user_id=user_id, name=new_name)
-        await state.finish()
+            user_commands_db.add_user(user_id=user_id, 
+                    first_name=new_name, 
+                    username=message.from_user.username)
         await message.answer(f'{new_name}, очень приятно! \nМожете воспользоваться нашим меню ниже.\n\n'
                              f'(Если меню спряталось, нажмите 🎛, рядом с кнопкой микрофона)',
                              reply_markup=main_menu)

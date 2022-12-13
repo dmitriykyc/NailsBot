@@ -1,13 +1,12 @@
 import datetime
 from typing import List
+from dotenv import load_config
 
 from aiogram import Dispatcher
 from gino import Gino
 import sqlalchemy as sa
 
-from Nails_bot.tgbot.config import load_config
-
-config = load_config(r'D:\Programming\TG_BOTS\Nails_bot\Nails_bot\.env')
+load_config()
 db = Gino()
 
 class BaseModel(db.Model):
