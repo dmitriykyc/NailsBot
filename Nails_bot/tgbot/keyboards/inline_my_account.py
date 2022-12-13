@@ -1,6 +1,6 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-from Nails_bot.tgbot.keyboards.inline_my_account_data import my_account_data
+from tgbot.keyboards.inline_my_account_data import my_account_data
 
 
 def get_my_account_menu(id_appointment):

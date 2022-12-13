@@ -53,10 +53,10 @@ async def get_all_masters():
 #     return user
 
 
-async def select_master(id_master: int):
-    '''Выбрать одного пользователя'''
-    master = await Master.get(id_master)
-    return master
+# async def select_master(id_master: int):
+#     '''Выбрать одного пользователя'''
+#     master = await Master.get(id_master)
+#     return master
 
 
 # async def update_user(id_user: int, name: str):
@@ -100,10 +100,10 @@ async def select_services_from_category(id_category: int):
     return services
 
 
-async def select_service(id_services: int):
-    ''''''
-    service = await Services.get(id_services)
-    return service
+# async def select_service(id_services: int):
+#     ''''''
+#     service = await Services.get(id_services)
+#     return service
 
 
 async def add_services_to_appointment(id_appointment: int, id_services: int):
@@ -119,30 +119,30 @@ async def add_appointment(user_id: int, id_master: int, datetime):
     await data.create()
 
 
-async def get_all_dict_appointment(id_appointment):
-    appointment = await Appointment.get(id_appointment)
-    id_master = appointment.id_master
-    datetime = appointment.datetime
-    services = await AppointmentServices.query.where(AppointmentServices.id_appointment == id_appointment).gino.all()
-    all_services_list = [ell.id_services for ell in services]
-    active = appointment.active
-    result_appointment = {'id_master': id_master,
-                          'datetime': datetime,
-                          'services': all_services_list,
-                          'active': active}
+# async def get_all_dict_appointment(id_appointment):
+#     appointment = await Appointment.get(id_appointment)
+#     id_master = appointment.id_master
+#     datetime = appointment.datetime
+#     services = await AppointmentServices.query.where(AppointmentServices.id_appointment == id_appointment).gino.all()
+#     all_services_list = [ell.id_services for ell in services]
+#     active = appointment.active
+#     result_appointment = {'id_master': id_master,
+#                           'datetime': datetime,
+#                           'services': all_services_list,
+#                           'active': active}
 
-    return result_appointment
+#     return result_appointment
 
-async def get_all_list_appointment_from_user(user_id: int):
-    all_appointment = await Appointment.query.where(and_(
-        Appointment.user_id == user_id,
-        Appointment.active)).gino.all()
-    res_ell = [ell.id for ell in all_appointment]
-    return res_ell
+# async def get_all_list_appointment_from_user(user_id: int):
+#     all_appointment = await Appointment.query.where(and_(
+#         Appointment.user_id == user_id,
+#         Appointment.active)).gino.all()
+#     res_ell = [ell.id for ell in all_appointment]
+#     return res_ell
 
-async def edit_active_appointment(id_appointment):
-    appointment = await Appointment.get(id_appointment)
-    await appointment.update(active=False).apply()
+# async def edit_active_appointment(id_appointment):
+#     appointment = await Appointment.get(id_appointment)
+#     await appointment.update(active=False).apply()
 
 if __name__ == '__main__':
     db_connect()

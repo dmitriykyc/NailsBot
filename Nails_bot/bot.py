@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.fsm_storage.redis import RedisStorage2
+from tgbot.handlers.my_account import register_handlers_my_account
 
 from tgbot.handlers.get_photo import register_get_photo
 from tgbot.handlers.start_bot import register_start_bot
@@ -28,8 +29,7 @@ def register_all_filters(dp):
 
 
 def register_all_handlers(dp):
-    pass
-    # register_handlers_my_account(dp)
+    register_handlers_my_account(dp)
     # register_entry_services_to_master(dp)
     # register_entry_master_to_services(dp)
     # register_feedback_handler(dp)
