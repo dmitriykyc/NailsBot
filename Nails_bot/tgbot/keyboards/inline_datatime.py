@@ -3,7 +3,7 @@ import calendar
 
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-from Nails_bot.tgbot.keyboards.inline_datetime_data import create_datetime, ignore_callback
+from tgbot.keyboards.inline_datetime_data import create_datetime, ignore_callback
 
 
 def get_menu_years(way):

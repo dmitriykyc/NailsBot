@@ -1,3 +1,4 @@
+from asyncio import run_coroutine_threadsafe
 import os
 import psycopg2
 
@@ -26,7 +27,27 @@ def select_master(id_master: int):
         'working': services_data[4]}
     return res_master
 
+def get_all_masters():
+    '''Забрать всех мастеров'''
+    connect = db_connect()
+    cur = connect.cursor()
+    sql = f'SELECT master_id, name, photo_master_id, disc_master, working FROM masters WHERE working=TRUE;'
+    cur.execute(sql)
+    masters_data = cur.fetchall()
+    connect.commit()
+    connect.close()
+    res_masters = []
+    for master in masters_data:
+        res_master = {}
+        res_master['master_id'] = master[0]
+        res_master['name'] = master[1]
+        res_master['photo_master_id'] = master[2]
+        res_master['disc_master'] = master[3]
+        res_master['working'] = master[4]
+        res_masters.append(res_master)
+    return res_masters
+
 
 if __name__ == '__main__':
-    select_master(1)
+    print(get_all_masters())
 

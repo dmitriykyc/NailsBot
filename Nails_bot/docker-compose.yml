@@ -1,0 +1,49 @@
+version: "3.1"
+
+services:
+
+  nails_bot:
+    container_name: NailsBot
+    build:
+      context: .
+    command: python bot.py
+    restart: always
+    networks:
+      - botnet
+    volumes:
+      - .:/NailsBot
+    depends_on:
+      - db_nails_bot
+      - redis_db_nails_bot
+    env_file:
+      - ".env"
+
+  db_nails_bot:
+    container_name: db_nails_bot
+    image: postgres:14.1-alpine
+    environment:
+      POSTGRES_DB: $DB_NAME
+      POSTGRES_USER: $DB_USER
+      POSTGRES_PASSWORD: $DB_PASSWORD
+    restart: always
+    ports:
+      - '5436:5436'
+    networks:
+      - botnet
+    volumes:
+      - ./postgres:/var/lib/postgresql
+    command: -p 5436
+
+  redis_db_nails_bot:
+    container_name: redis_db_nails_bot
+    image: redis:alpine
+    restart: on-failure
+    command: redis-server
+    environment:
+      - REDIS_REPLICATION_MODE=master
+    networks:
+      - botnet
+
+networks:
+  botnet:
+    driver: bridge

@@ -4,7 +4,6 @@
 from aiogram import Dispatcher
 from aiogram.types import CallbackQuery
 
-from Nails_bot.masters import masters
 from Nails_bot.tgbot.keyboards.inline_choice_master_data import touch_button_master
 
 

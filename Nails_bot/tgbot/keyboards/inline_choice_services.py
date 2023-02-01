@@ -28,7 +28,7 @@ def get_menu_choice_services_all(page, category_all, way):
 
     position = {}
     for ell in category_all:
-        position[ell.name] = ell.id
+        position[ell["name"]] = ell['id']
     new_position = list(slice_data(position, 5))
 
     inline_kb_full = InlineKeyboardMarkup(row_width=1)
@@ -57,9 +57,9 @@ def get_menu_service(all_services, id_choose_already, way):
     inline_kb_services = InlineKeyboardMarkup(row_width=1)
 
     for ell in all_services:
-        after_text = '✅ ' if ell.id in id_choose_already else ''
-        inline_kb_services.add(InlineKeyboardButton(text=f'{after_text}{ell.name} - {ell.price}',
-                                                    callback_data=f'tcs:{ell.id}:{ell.price}:0:{way}'))
+        after_text = '✅ ' if ell['id'] in id_choose_already else ''
+        inline_kb_services.add(InlineKeyboardButton(text=f'{after_text}{ell["name"]} - {ell["price"]}',
+                                                    callback_data=f'tcs:{ell["id"]}:{ell["price"]}:0:{way}'))
     inline_kb_services.add(InlineKeyboardButton(text='↩ Назад к категориям', callback_data=f'back_to_category_{way}'))
     if way == 'stm':
         inline_kb_services.add(

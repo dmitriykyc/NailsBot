@@ -42,9 +42,9 @@ async def delete_mater(id_master: int):
         await master.delete()
 
 
-async def get_all_masters():
-    '''Забрать всех мастеров'''
-    return await Master.query.gino.all()
+# async def get_all_masters():
+#     '''Забрать всех мастеров'''
+#     return await Master.query.gino.all()
 
 
 # async def select_user(id_user: int):
@@ -89,15 +89,15 @@ async def add_services(name: str, price: int, category_id: int):
         print(f'Category {name=}, is not append')
 
 
-async def get_all_services_category():
-    '''Забрать все категории услуг'''
-    return await CategoryServices.query.gino.all()
+# async def get_all_services_category():
+#     '''Забрать все категории услуг'''
+#     return await CategoryServices.query.gino.all()
 
 
-async def select_services_from_category(id_category: int):
-    '''Выборка услуг из категории'''
-    services = await Services.query.where(Services.category_id == id_category).gino.all()
-    return services
+# async def select_services_from_category(id_category: int):
+#     '''Выборка услуг из категории'''
+#     services = await Services.query.where(Services.category_id == id_category).gino.all()
+#     return services
 
 
 # async def select_service(id_services: int):
@@ -106,12 +106,9 @@ async def select_services_from_category(id_category: int):
 #     return service
 
 
-async def add_services_to_appointment(id_appointment: int, id_services: int):
-    try:
-        data = AppointmentServices(id_appointment=id_appointment, id_services=id_services)
-        await data.create()
-    except:
-        print(f'AppointmentServices {id_appointment=}, is not append')
+# async def add_services_to_appointment(id_appointment: int, id_services: int):
+#     data = AppointmentServices(id_appointment=id_appointment, id_services=id_services)
+#     await data.create()
 
 
 async def add_appointment(user_id: int, id_master: int, datetime):
