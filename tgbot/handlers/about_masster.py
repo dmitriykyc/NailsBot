@@ -4,8 +4,7 @@
 from aiogram import Dispatcher
 from aiogram.types import CallbackQuery
 
-from Nails_bot.tgbot.keyboards.inline_choice_master_data import touch_button_master
-
+from tgbot.keyboards.inline_choice_master_data import touch_button_master
 
 def register_hand_about_master(dp: Dispatcher):
     @dp.callback_query_handler(touch_button_master.filter(aboute='True'))

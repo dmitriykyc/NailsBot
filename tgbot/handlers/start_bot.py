@@ -1,4 +1,6 @@
+import asyncio
 from asyncio.log import logger
+from cgitb import text
 from hashlib import new
 from aiogram import types, Dispatcher
 from aiogram.dispatcher.storage import FSMContext
@@ -11,12 +13,13 @@ from tgbot.misc.states import CheckName
 
 # from tgbot.services.db_api import db_gino, db_commands
 from tgbot.services.db_api import user_commands_db
+from tgbot.services.db_api import create_tables_bd
 
 
 def register_start_bot(dp: Dispatcher):
     # Обрабатываем команду старт
     @dp.message_handler(commands='start')
-    async def start_command(message: types.Message):
+    async def start_command(message: types.Message, state: FSMContext):
         logger.info('[v] Новый пользователь:\n'
               f'{message.from_user}\n'
               f'-------------------------------------------')
@@ -39,6 +42,10 @@ def register_start_bot(dp: Dispatcher):
         else:
             await message.answer('Пожалуйста, напишите как Вас зовут?👇')
             await CheckName.Q2.set()
+            await asyncio.sleep(60)
+            if await state.get_state():
+                await state.finish()
+
 
     # Проверка имени пользователя из профиля в телеграм
     @dp.callback_query_handler(
@@ -81,3 +88,12 @@ def register_start_bot(dp: Dispatcher):
         await message.answer(f'{new_name}, очень приятно! \nМожете воспользоваться нашим меню ниже.\n\n'
                              f'(Если меню спряталось, нажмите 🎛, рядом с кнопкой микрофона)',
                              reply_markup=main_menu)
+
+    @dp.message_handler(text='Создай таблицы')
+    async def create_table(message: types.message):
+        create_tables_bd.create_table_appointment()
+        create_tables_bd.create_table_appointment_services()
+        create_tables_bd.create_table_category_services()
+        create_tables_bd.create_table_masters()
+        create_tables_bd.create_table_services()
+        create_tables_bd.create_table_users()
