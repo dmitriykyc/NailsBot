@@ -95,7 +95,7 @@ def register_start_bot(dp: Dispatcher):
         create_tables_bd.create_table_masters()
         create_tables_bd.create_table_category_services()
         create_tables_bd.create_table_services()
-        create_tables_bd.create_table_appointment_services()
         create_tables_bd.create_table_appointment()
+        create_tables_bd.create_table_appointment_services()
 
         await message.answer('Ok')
