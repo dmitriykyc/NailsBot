@@ -34,6 +34,7 @@ def get_all_list_appointment_from_user(user_id: int):
         f'FROM appointment WHERE user_id={user_id} AND active=TRUE;'
     cur.execute(sql)
     appointment_data = cur.fetchall()
+    # print(appointment_data)
     connect.commit()
     connect.close()
     res_appointment = []
@@ -54,9 +55,10 @@ def get_all_dict_appointment(id_appointment):
         f'ON appointment_services.id_appointment = appointment.id WHERE appointment.id={id_appointment} '
     cur.execute(sql)
     appointment_data = cur.fetchall()
+    # print(appointment_data)
     connect.commit()
     connect.close()
-    res_appointment = []
+    # res_appointment = []
     if appointment_data:
         res_appo = {'id': appointment_data[0][0], 
                 'user_id': appointment_data[0][1], 
@@ -66,8 +68,8 @@ def get_all_dict_appointment(id_appointment):
                 'id_services': []}
         for appointment in appointment_data:
             res_appo['id_services'].append(appointment[5])
-        res_appointment.append(res_appo)
-    return res_appointment
+        # res_appointment.append(res_appo)
+    return res_appo
     
 def edit_active_appointment(id_appointment):
     connect = db_connect()
