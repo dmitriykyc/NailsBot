@@ -93,8 +93,8 @@ def register_start_bot(dp: Dispatcher):
     async def create_table(message: types.Message):
         create_tables_bd.create_table_users()
         create_tables_bd.create_table_masters()
-        create_tables_bd.create_table_services()
         create_tables_bd.create_table_category_services()
+        create_tables_bd.create_table_services()
         create_tables_bd.create_table_appointment_services()
         create_tables_bd.create_table_appointment()
 
