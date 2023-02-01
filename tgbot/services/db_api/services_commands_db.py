@@ -1,3 +1,4 @@
+import logging
 import os
 import psycopg2
 
@@ -132,6 +133,7 @@ def select_services_from_category(id_category: int):
         res_serv['price'] = service[2]
         res_serv['category_id'] = service[3]
         res_services.append(res_serv)
+    logging.info(f'{id_category},\n {res_services}')
     return res_services
 
 if __name__ == '__main__':
