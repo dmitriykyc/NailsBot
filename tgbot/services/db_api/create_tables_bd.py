@@ -3,6 +3,7 @@ import psycopg2
 
 from dotenv import load_dotenv
 
+load_dotenv()
 
 def db_connect():
     load_dotenv()
@@ -102,9 +103,10 @@ def drop_table(name):
     
 
 if __name__ == '__main__':
-    create_table_users()
-    create_table_masters()
-    create_table_appointment()
-    create_table_category_services()
-    create_table_services()
-    create_table_appointment_services()
+    # create_table_users()
+    # create_table_masters()
+    # create_table_appointment()
+    # create_table_category_services()
+    # create_table_services()
+    # create_table_appointment_services()
+    pass
