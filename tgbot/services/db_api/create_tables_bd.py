@@ -8,7 +8,7 @@ load_dotenv()
 def db_connect():
     load_dotenv()
     connect = psycopg2.connect(dbname=os.getenv("DB_NAME"), user=os.getenv("DB_USER"),
-                               password=os.getenv("DB_PASSWORD"), host=os.getenv("HOST"), port=os.getenv("DB_PORT"))
+                               password=os.getenv("DB_PASSWORD"), host=os.getenv("HOST"), port=os.getenv("PORT"))
     return connect
 
 def create_table_users():
