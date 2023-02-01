@@ -29,7 +29,7 @@ def register_handlers_my_account(dp: Dispatcher):
         else:
             await message.answer('Здесь будет информация о активных записях')
             for ell in all_appointment:
-                data_appintment = services_commands_db.get_all_dict_appointment(ell['id'])[0]
+                data_appintment = services_commands_db.get_all_dict_appointment(ell['id'])
                 master = masters_commands_db.select_master(data_appintment['id_master'])
                 all_services = await result_message_sum(data_appintment['id_services'])
                 await message.answer(f'Ваша запись на {data_appintment["datetime"].strftime("%d.%m.%y %H:%M")}\n'
