@@ -27,12 +27,12 @@ services:
       POSTGRES_PASSWORD: $DB_PASSWORD
     restart: always
     ports:
-      - '5436:5436'
+      - '5503:5503'
     networks:
       - botnet
     volumes:
       - ./postgres:/var/lib/postgresql
-    command: -p 5436
+    command: -p 5503
 
   redis_db_nails_bot:
     container_name: redis_db_nails_bot
