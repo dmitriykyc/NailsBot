@@ -48,7 +48,6 @@ def register_entry_master_to_services(dp: Dispatcher):
 
         master = masters_commands_db.select_master(id_master=int(callback_data["id"]))
         photo_master = master["photo_master_id"]
-
         await call.message.edit_caption(f'Профессиональный мастер, работает в отрасли с 2011 года.\n'
                                         f'Постоянный участник международных выставок и мастерклассов.', reply_markup=get_menu_two(
             master["master_id"], 'mts'))
